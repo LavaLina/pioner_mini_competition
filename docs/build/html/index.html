@@ -1,0 +1,465 @@
+
+<!DOCTYPE html>
+
+<html lang="ru">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Создание карты полета квадрокоптера и обработка её классификатором &#8212; Документация pioner_mini_map_classification 0.1</title>
+    <link rel="stylesheet" type="text/css" href="_static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="_static/alabaster.css" />
+    <script data-url_root="./" id="documentation_options" src="_static/documentation_options.js"></script>
+    <script src="_static/jquery.js"></script>
+    <script src="_static/underscore.js"></script>
+    <script src="_static/_sphinx_javascript_frameworks_compat.js"></script>
+    <script src="_static/doctools.js"></script>
+    <script src="_static/translations.js"></script>
+    <link rel="index" title="Алфавитный указатель" href="genindex.html" />
+    <link rel="search" title="Поиск" href="search.html" />
+   
+  <link rel="stylesheet" href="_static/custom.css" type="text/css" />
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head><body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <div class="section" id="id1">
+<h1>Создание карты полета квадрокоптера и обработка её классификатором<a class="headerlink" href="#id1" title="Permalink to this heading">¶</a></h1>
+<div class="toctree-wrapper compound">
+</div>
+<p>Проект для квадрокоптера <a class="reference external" href="https://www.geoscan.aero/ru/pioneer-mini">Pioner Mini</a></p>
+<div class="section" id="id2">
+<h2>Авторы проекта<a class="headerlink" href="#id2" title="Permalink to this heading">¶</a></h2>
+<p><strong>Выполнила</strong>: Петелина Ярослава Андреевна (11 лет) ученица 6 класса ГБОУ г. Москвы</p>
+<p><strong>Наставник</strong>: Петелина Дарья Сергеевна, <a class="reference external" href="mailto:d&#46;s&#46;petelina&#37;&#52;&#48;gmail&#46;com">d<span>&#46;</span>s<span>&#46;</span>petelina<span>&#64;</span>gmail<span>&#46;</span>com</a></p>
+</div>
+<div class="section" id="id3">
+<h2>Описание проекта<a class="headerlink" href="#id3" title="Permalink to this heading">¶</a></h2>
+<ul class="simple">
+<li><p>с помощью программы <a class="reference external" href="https://www.lobe.ai/">Lobe</a> был обучен классификатор на три вида объектов: пусто, танк, РСЗО;</p></li>
+<li><p>полет квадрокоптера запрограммирован для облета прямоугольной территории по координатам;</p></li>
+<li><p>в параллельном потоке делает фотографии территории;</p></li>
+<li><p>после приземления все фото склеиваются в одну карту с помощью библиотеки <a class="reference external" href="https://opencv.org/">OpenCV</a> ;</p></li>
+<li><p>получившаяся карта делится на прямоугольники такой величины, чтобы на каждом куске было примерно по одному объекту;</p></li>
+<li><p>каждый кусок карты обрабатывается классификатором и подсчитывается количество классифицированных объектов.</p></li>
+</ul>
+<p>Проект доступен на <a class="reference external" href="https://github.com/LavaLina/pioner_mini_competition">GitHub</a></p>
+</div>
+<div class="section" id="id4">
+<h2>Обучение и тестирование классификатора<a class="headerlink" href="#id4" title="Permalink to this heading">¶</a></h2>
+<p>Основной инструкцией для обучения послужил проект <a class="reference external" href="https://docs.geoscan.aero/ru/master/learning-cases/parking-finder/parking_finder.html">Поиск вертолётных площадок</a></p>
+<ol class="arabic">
+<li><p>Создание датасета производилось, как описано в <a class="reference external" href="https://docs.geoscan.aero/ru/master/learning-cases/parking-finder/parking_finder.html#id9">проекте</a>, но для трёх классов:</p>
+<ul class="simple">
+<li><p>ничего не обнаружено (<strong>noenemy</strong>)</p></li>
+<li><p>танк (<strong>tank</strong>)</p></li>
+<li><p>РСЗО (<strong>rszo</strong>)</p></li>
+</ul>
+<a class="reference internal image-reference" href="_images/noenemy.png"><img alt="_images/noenemy.png" src="_images/noenemy.png" style="width: 200px;" /></a>
+<a class="reference internal image-reference" href="_images/tank.png"><img alt="_images/tank.png" src="_images/tank.png" style="width: 200px;" /></a>
+<a class="reference internal image-reference" href="_images/rszo.png"><img alt="_images/rszo.png" src="_images/rszo.png" style="width: 200px;" /></a>
+<a class="reference internal image-reference" href="_images/creating_dataset.jpg"><img alt="_images/creating_dataset.jpg" src="_images/creating_dataset.jpg" style="width: 610px;" /></a>
+</li>
+</ol>
+<ol class="arabic" start="2">
+<li><p>Обучение классификатора на этом датасете в программе <a class="reference external" href="https://www.lobe.ai/">Lobe</a>:</p>
+<a class="reference internal image-reference" href="_images/training_noenemy.png"><img alt="_images/training_noenemy.png" src="_images/training_noenemy.png" style="width: 300px;" /></a>
+<a class="reference internal image-reference" href="_images/training_tank.png"><img alt="_images/training_tank.png" src="_images/training_tank.png" style="width: 300px;" /></a>
+<a class="reference internal image-reference" href="_images/training_rszo.png"><img alt="_images/training_rszo.png" src="_images/training_rszo.png" style="width: 300px;" /></a>
+<p>Пришлось немного дообучать вручную, чтобы добиться 100% верно предсказанных результатов:</p>
+<blockquote>
+<div><a class="reference internal image-reference" href="_images/correct_training.jpg"><img alt="_images/correct_training.jpg" src="_images/correct_training.jpg" style="width: 600px;" /></a>
+</div></blockquote>
+</li>
+<li><p>Полученная модель классификатора была добавлена в проект, а для её тестирования была написана небольшая программа:
+«Квадрокоптер в бесполетном режиме выдает видео поток, а все полученные из него изображения в реальном времени обрабатываются классификатором.
+Информация о классе обнаруженного на фото объекта, выводится красным текстом прямо на фрейме видео потока»:</p>
+<a class="reference internal image-reference" href="_images/model_in_project.jpg"><img alt="_images/model_in_project.jpg" src="_images/model_in_project.jpg" style="width: 600px;" /></a>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">cv2</span>
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="kn">from</span> <span class="nn">PIL</span> <span class="kn">import</span> <span class="n">Image</span>
+<span class="kn">from</span> <span class="nn">lobe</span> <span class="kn">import</span> <span class="n">ImageModel</span>
+
+<span class="kn">import</span> <span class="nn">pioneer_sdk</span>
+
+<span class="n">pioneer</span> <span class="o">=</span> <span class="n">pioneer_sdk</span><span class="o">.</span><span class="n">Pioneer</span><span class="p">()</span>
+
+<span class="n">model</span> <span class="o">=</span> <span class="n">ImageModel</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="s1">&#39;./zbee_onnx&#39;</span><span class="p">)</span>
+
+<span class="k">while</span> <span class="kc">True</span><span class="p">:</span>
+    <span class="n">raw</span> <span class="o">=</span> <span class="n">pioneer</span><span class="o">.</span><span class="n">get_raw_video_frame</span><span class="p">()</span>
+    <span class="n">frame</span> <span class="o">=</span> <span class="n">cv2</span><span class="o">.</span><span class="n">imdecode</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">frombuffer</span><span class="p">(</span><span class="n">raw</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">uint8</span><span class="p">),</span> <span class="n">cv2</span><span class="o">.</span><span class="n">IMREAD_COLOR</span><span class="p">)</span>
+
+    <span class="n">frame_rgb</span> <span class="o">=</span> <span class="n">cv2</span><span class="o">.</span><span class="n">cvtColor</span><span class="p">(</span><span class="n">frame</span><span class="p">,</span> <span class="n">cv2</span><span class="o">.</span><span class="n">COLOR_BGR2RGB</span><span class="p">)</span>
+    <span class="n">model_frame</span> <span class="o">=</span> <span class="n">Image</span><span class="o">.</span><span class="n">fromarray</span><span class="p">(</span><span class="n">frame_rgb</span><span class="p">)</span>
+
+    <span class="n">predictions</span> <span class="o">=</span> <span class="n">model</span><span class="o">.</span><span class="n">predict</span><span class="p">(</span><span class="n">model_frame</span><span class="p">)</span>
+
+    <span class="n">key</span> <span class="o">=</span> <span class="n">cv2</span><span class="o">.</span><span class="n">waitKey</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="n">key</span> <span class="o">==</span> <span class="mi">27</span><span class="p">:</span>  <span class="c1"># esc</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;esc pressed&#39;</span><span class="p">)</span>
+        <span class="n">cv2</span><span class="o">.</span><span class="n">destroyAllWindows</span><span class="p">()</span>
+        <span class="n">exit</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
+
+    <span class="n">cv2</span><span class="o">.</span><span class="n">putText</span><span class="p">(</span><span class="n">frame</span><span class="p">,</span> <span class="sa">f</span><span class="s1">&#39;Predicted class is </span><span class="si">{</span><span class="n">predictions</span><span class="o">.</span><span class="n">prediction</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">,</span> <span class="p">(</span><span class="mi">20</span><span class="p">,</span> <span class="mi">450</span><span class="p">),</span> <span class="n">cv2</span><span class="o">.</span><span class="n">FONT_HERSHEY_SIMPLEX</span><span class="p">,</span>
+                <span class="n">fontScale</span><span class="o">=</span><span class="mf">0.5</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">255</span><span class="p">))</span>
+    <span class="n">cv2</span><span class="o">.</span><span class="n">imshow</span><span class="p">(</span><span class="s2">&quot;Frame&quot;</span><span class="p">,</span> <span class="n">frame</span><span class="p">)</span>
+
+<span class="n">cv2</span><span class="o">.</span><span class="n">destroyAllWindows</span><span class="p">()</span>
+</pre></div>
+</div>
+<p>Результат работы программы:</p>
+<blockquote>
+<div><a class="reference internal image-reference" href="_images/classification_test.jpg"><img alt="_images/classification_test.jpg" src="_images/classification_test.jpg" style="width: 600px;" /></a>
+<a class="reference internal image-reference" href="_images/rszo_classification.jpg"><img alt="_images/rszo_classification.jpg" src="_images/rszo_classification.jpg" style="width: 600px;" /></a>
+<a class="reference internal image-reference" href="_images/tank_classification.jpg"><img alt="_images/tank_classification.jpg" src="_images/tank_classification.jpg" style="width: 600px;" /></a>
+<a class="reference internal image-reference" href="_images/noenemy_classification.jpg"><img alt="_images/noenemy_classification.jpg" src="_images/noenemy_classification.jpg" style="width: 600px;" /></a>
+</div></blockquote>
+</li>
+</ol>
+</div>
+<div class="section" id="id7">
+<h2>Основная программа<a class="headerlink" href="#id7" title="Permalink to this heading">¶</a></h2>
+<ul>
+<li><p>Программа выполняется в 2 потока: один поток отвечает за полёт по координатам,
+а другой – за фотографирование и сохранение изображений.</p></li>
+<li><p>Координация между потоками происходит с помощью обмена сообщениями:
+поток, отвечающий за полёт, прибыв в точку, посылает свои координаты второму
+потоку. Второй поток сохраняет изображение, полученное с камеры дрона в этот
+момент, указывая в имени файла координаты.</p>
+<a class="reference internal image-reference" href="_images/program.jpg"><img alt="_images/program.jpg" src="_images/program.jpg" style="width: 600px;" /></a>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">if</span> <span class="vm">__name__</span> <span class="o">==</span> <span class="s1">&#39;__main__&#39;</span><span class="p">:</span>
+    <span class="n">BaseManager</span><span class="o">.</span><span class="n">register</span><span class="p">(</span><span class="s1">&#39;Pioneer&#39;</span><span class="p">,</span> <span class="n">Pioneer</span><span class="p">)</span>
+    <span class="n">manager</span> <span class="o">=</span> <span class="n">BaseManager</span><span class="p">()</span>
+    <span class="n">manager</span><span class="o">.</span><span class="n">start</span><span class="p">()</span>
+    <span class="n">pioneer_mini</span> <span class="o">=</span> <span class="n">manager</span><span class="o">.</span><span class="n">Pioneer</span><span class="p">()</span>
+    <span class="n">pioneer_mini</span><span class="o">.</span><span class="n">arm</span><span class="p">()</span>
+    <span class="n">pioneer_mini</span><span class="o">.</span><span class="n">takeoff</span><span class="p">()</span>
+
+    <span class="n">buffer</span> <span class="o">=</span> <span class="n">mp</span><span class="o">.</span><span class="n">Queue</span><span class="p">(</span><span class="n">maxsize</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+
+    <span class="n">photo_taker</span> <span class="o">=</span> <span class="n">mp</span><span class="o">.</span><span class="n">Process</span><span class="p">(</span><span class="n">target</span><span class="o">=</span><span class="n">take_photo</span><span class="p">,</span> <span class="n">args</span><span class="o">=</span><span class="p">(</span><span class="n">buffer</span><span class="p">,</span> <span class="n">pioneer_mini</span><span class="p">))</span>
+    <span class="n">flight_navigator</span> <span class="o">=</span> <span class="n">mp</span><span class="o">.</span><span class="n">Process</span><span class="p">(</span><span class="n">target</span><span class="o">=</span><span class="n">drone_control</span><span class="p">,</span> <span class="n">args</span><span class="o">=</span><span class="p">(</span><span class="n">buffer</span><span class="p">,</span> <span class="n">pioneer_mini</span><span class="p">))</span>
+
+    <span class="n">photo_taker</span><span class="o">.</span><span class="n">start</span><span class="p">()</span>
+    <span class="n">flight_navigator</span><span class="o">.</span><span class="n">start</span><span class="p">()</span>
+
+    <span class="n">photo_taker</span><span class="o">.</span><span class="n">join</span><span class="p">()</span>
+    <span class="n">flight_navigator</span><span class="o">.</span><span class="n">join</span><span class="p">()</span>
+
+    <span class="n">pioneer_mini</span><span class="o">.</span><span class="n">land</span><span class="p">()</span>
+</pre></div>
+</div>
+<a class="reference internal image-reference" href="_images/flight_and_photo.jpg"><img alt="_images/flight_and_photo.jpg" src="_images/flight_and_photo.jpg" style="width: 600px;" /></a>
+</li>
+</ul>
+</div>
+<div class="section" id="id8">
+<h2>Полёт по координатам<a class="headerlink" href="#id8" title="Permalink to this heading">¶</a></h2>
+<blockquote>
+<div><a class="reference internal image-reference" href="_images/flight.jpg"><img alt="_images/flight.jpg" src="_images/flight.jpg" style="width: 600px;" /></a>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1">#i = 0     1    2    3    4   5</span>
+<span class="n">x</span> <span class="o">=</span> <span class="p">[</span><span class="mf">0.0</span><span class="p">,</span> <span class="mf">0.4</span><span class="p">,</span> <span class="mf">0.4</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">,</span> <span class="mi">0</span><span class="p">]</span>
+<span class="n">y</span> <span class="o">=</span> <span class="p">[</span><span class="mf">0.5</span><span class="p">,</span> <span class="mf">0.5</span><span class="p">,</span> <span class="mf">0.7</span><span class="p">,</span> <span class="mf">0.7</span><span class="p">,</span> <span class="mf">0.5</span><span class="p">,</span> <span class="mi">0</span><span class="p">]</span>
+
+<span class="k">def</span> <span class="nf">drone_control</span><span class="p">(</span><span class="n">buff</span><span class="p">,</span> <span class="n">drone</span><span class="p">):</span>
+    <span class="n">new_point</span> <span class="o">=</span> <span class="kc">True</span>
+
+    <span class="n">i</span> <span class="o">=</span> <span class="mi">0</span>
+
+    <span class="n">command_x</span> <span class="o">=</span> <span class="n">x</span><span class="p">[</span><span class="n">i</span><span class="p">]</span>
+    <span class="n">command_y</span> <span class="o">=</span> <span class="n">y</span><span class="p">[</span><span class="n">i</span><span class="p">]</span>
+    <span class="n">command_z</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
+    <span class="n">command_yaw</span> <span class="o">=</span> <span class="n">math</span><span class="o">.</span><span class="n">radians</span><span class="p">(</span><span class="nb">float</span><span class="p">(</span><span class="mi">0</span><span class="p">))</span>
+
+    <span class="k">if</span> <span class="n">buff</span><span class="o">.</span><span class="n">full</span><span class="p">():</span>
+        <span class="n">buff</span><span class="o">.</span><span class="n">get</span><span class="p">()</span>
+
+    <span class="n">buff</span><span class="o">.</span><span class="n">put</span><span class="p">([</span><span class="n">i</span><span class="p">])</span>
+
+    <span class="k">while</span> <span class="kc">True</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">new_point</span><span class="p">:</span>
+            <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Летим в точку &quot;</span><span class="p">,</span> <span class="n">command_x</span><span class="p">,</span> <span class="s2">&quot;, &quot;</span><span class="p">,</span> <span class="n">command_y</span><span class="p">,</span> <span class="s2">&quot;, &quot;</span><span class="p">,</span> <span class="n">command_z</span><span class="p">)</span>
+            <span class="n">drone</span><span class="o">.</span><span class="n">go_to_local_point</span><span class="p">(</span><span class="n">x</span><span class="o">=</span><span class="n">command_x</span><span class="p">,</span> <span class="n">y</span><span class="o">=</span><span class="n">command_y</span><span class="p">,</span> <span class="n">z</span><span class="o">=</span><span class="n">command_z</span><span class="p">,</span> <span class="n">yaw</span><span class="o">=</span><span class="n">command_yaw</span><span class="p">)</span>
+            <span class="n">new_point</span> <span class="o">=</span> <span class="kc">False</span>
+
+        <span class="n">key</span> <span class="o">=</span> <span class="n">cv</span><span class="o">.</span><span class="n">waitKey</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">key</span> <span class="o">==</span> <span class="mi">27</span><span class="p">:</span>
+            <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;esc pressed&#39;</span><span class="p">)</span>
+            <span class="n">pioneer_mini</span><span class="o">.</span><span class="n">land</span><span class="p">()</span>
+
+            <span class="k">if</span> <span class="n">buff</span><span class="o">.</span><span class="n">full</span><span class="p">():</span>
+                <span class="n">buff</span><span class="o">.</span><span class="n">get</span><span class="p">()</span>
+            <span class="n">buff</span><span class="o">.</span><span class="n">put</span><span class="p">([</span><span class="s1">&#39;end&#39;</span><span class="p">])</span>
+            <span class="k">break</span>
+
+        <span class="n">time</span><span class="o">.</span><span class="n">sleep</span><span class="p">(</span><span class="mi">5</span><span class="p">)</span>
+
+        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Достигнута точка &quot;</span><span class="p">,</span> <span class="n">command_x</span><span class="p">,</span> <span class="s2">&quot;, &quot;</span><span class="p">,</span> <span class="n">command_y</span><span class="p">,</span> <span class="s2">&quot;, &quot;</span><span class="p">,</span> <span class="n">command_z</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">buff</span><span class="o">.</span><span class="n">full</span><span class="p">():</span>
+            <span class="n">buff</span><span class="o">.</span><span class="n">get</span><span class="p">()</span>
+        <span class="n">buff</span><span class="o">.</span><span class="n">put</span><span class="p">([</span><span class="n">i</span><span class="p">])</span>
+
+        <span class="n">i</span> <span class="o">=</span> <span class="n">i</span> <span class="o">+</span> <span class="mi">1</span>
+
+        <span class="k">if</span> <span class="n">i</span> <span class="o">&lt;</span> <span class="nb">len</span><span class="p">(</span><span class="n">x</span><span class="p">):</span>
+            <span class="n">command_x</span> <span class="o">=</span> <span class="n">x</span><span class="p">[</span><span class="n">i</span><span class="p">]</span>
+            <span class="n">command_y</span> <span class="o">=</span> <span class="n">y</span><span class="p">[</span><span class="n">i</span><span class="p">]</span>
+            <span class="n">time</span><span class="o">.</span><span class="n">sleep</span><span class="p">(</span><span class="mi">2</span><span class="p">)</span>
+            <span class="n">new_point</span> <span class="o">=</span> <span class="kc">True</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">drone</span><span class="o">.</span><span class="n">land</span><span class="p">()</span>
+            <span class="k">if</span> <span class="n">buff</span><span class="o">.</span><span class="n">full</span><span class="p">():</span>
+                <span class="n">buff</span><span class="o">.</span><span class="n">get</span><span class="p">()</span>
+            <span class="n">buff</span><span class="o">.</span><span class="n">put</span><span class="p">([</span><span class="s1">&#39;end&#39;</span><span class="p">])</span>
+            <span class="k">break</span>
+</pre></div>
+</div>
+</div></blockquote>
+</div>
+<div class="section" id="id9">
+<h2>Фотографирование по координатам<a class="headerlink" href="#id9" title="Permalink to this heading">¶</a></h2>
+<p>Точка B:</p>
+<blockquote>
+<div><a class="reference internal image-reference" href="_images/frame0_0.0_0.5.jpg"><img alt="_images/frame0_0.0_0.5.jpg" src="_images/frame0_0.0_0.5.jpg" style="width: 200px;" /></a>
+<a class="reference internal image-reference" href="_images/B.jpg"><img alt="_images/B.jpg" src="_images/B.jpg" style="width: 200px;" /></a>
+</div></blockquote>
+<p>Точка C:</p>
+<blockquote>
+<div><a class="reference internal image-reference" href="_images/frame1_0.4_0.5.jpg"><img alt="_images/frame1_0.4_0.5.jpg" src="_images/frame1_0.4_0.5.jpg" style="width: 200px;" /></a>
+<a class="reference internal image-reference" href="_images/C.jpg"><img alt="_images/C.jpg" src="_images/C.jpg" style="width: 200px;" /></a>
+</div></blockquote>
+<p>Точка D:</p>
+<blockquote>
+<div><a class="reference internal image-reference" href="_images/frame2_0.4_0.7.jpg"><img alt="_images/frame2_0.4_0.7.jpg" src="_images/frame2_0.4_0.7.jpg" style="width: 200px;" /></a>
+<a class="reference internal image-reference" href="_images/D.jpg"><img alt="_images/D.jpg" src="_images/D.jpg" style="width: 200px;" /></a>
+</div></blockquote>
+<p>Точка E:</p>
+<blockquote>
+<div><a class="reference internal image-reference" href="_images/frame3_0.0_0.7.jpg"><img alt="_images/frame3_0.0_0.7.jpg" src="_images/frame3_0.0_0.7.jpg" style="width: 200px;" /></a>
+<a class="reference internal image-reference" href="_images/E.jpg"><img alt="_images/E.jpg" src="_images/E.jpg" style="width: 200px;" /></a>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">take_photo</span><span class="p">(</span><span class="n">buff</span><span class="p">,</span> <span class="n">drone</span><span class="p">):</span>
+    <span class="n">new_message</span> <span class="o">=</span> <span class="kc">False</span>
+    <span class="k">while</span> <span class="kc">True</span><span class="p">:</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">frame</span> <span class="o">=</span> <span class="n">cv</span><span class="o">.</span><span class="n">imdecode</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">frombuffer</span><span class="p">(</span><span class="n">drone</span><span class="o">.</span><span class="n">get_raw_video_frame</span><span class="p">(),</span> <span class="n">dtype</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">uint8</span><span class="p">),</span>
+                                   <span class="n">cv</span><span class="o">.</span><span class="n">IMREAD_COLOR</span><span class="p">)</span>
+
+            <span class="k">if</span> <span class="ow">not</span> <span class="n">buff</span><span class="o">.</span><span class="n">empty</span><span class="p">():</span>
+                <span class="n">message</span> <span class="o">=</span> <span class="n">buff</span><span class="o">.</span><span class="n">get</span><span class="p">()</span>
+                <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">message</span><span class="p">)</span> <span class="o">==</span> <span class="mi">1</span> <span class="ow">and</span> <span class="n">message</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">==</span> <span class="s1">&#39;end&#39;</span><span class="p">:</span>
+                    <span class="k">break</span>
+                <span class="n">i</span> <span class="o">=</span> <span class="n">message</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+                <span class="n">new_message</span> <span class="o">=</span> <span class="kc">True</span>
+
+            <span class="k">if</span> <span class="n">new_message</span><span class="p">:</span>
+                <span class="n">name</span> <span class="o">=</span> <span class="s2">&quot;frame&quot;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">i</span><span class="p">)</span> <span class="o">+</span> <span class="s2">&quot;_&quot;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">x</span><span class="p">[</span><span class="n">i</span><span class="p">])</span> <span class="o">+</span> <span class="s2">&quot;_&quot;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">y</span><span class="p">[</span><span class="n">i</span><span class="p">])</span> <span class="o">+</span> <span class="s2">&quot;.jpg&quot;</span>
+                <span class="n">cv</span><span class="o">.</span><span class="n">imwrite</span><span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="n">frame</span><span class="p">)</span>
+
+                <span class="n">new_message</span> <span class="o">=</span> <span class="kc">False</span>
+
+        <span class="k">except</span> <span class="n">cv</span><span class="o">.</span><span class="n">error</span><span class="p">:</span>
+            <span class="k">continue</span>
+
+        <span class="n">cv</span><span class="o">.</span><span class="n">imshow</span><span class="p">(</span><span class="s1">&#39;pioneer_camera_stream&#39;</span><span class="p">,</span> <span class="n">frame</span><span class="p">)</span>
+
+        <span class="n">key</span> <span class="o">=</span> <span class="n">cv</span><span class="o">.</span><span class="n">waitKey</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">key</span> <span class="o">==</span> <span class="mi">27</span><span class="p">:</span>
+            <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;esc pressed&#39;</span><span class="p">)</span>
+            <span class="n">drone</span><span class="o">.</span><span class="n">land</span><span class="p">()</span>
+            <span class="k">break</span>
+</pre></div>
+</div>
+</div></blockquote>
+</div>
+<div class="section" id="id10">
+<h2>Постобработка фотографий<a class="headerlink" href="#id10" title="Permalink to this heading">¶</a></h2>
+<p>После полёта получается четыре изображения, которые склеиваются с помощью библиотеки <a class="reference external" href="https://opencv.org/">OpenCV</a> <a class="reference external" href="https://docs.opencv.org/4.x/d2/d8d/classcv_1_1Stitcher.html#a308a47865a1f381e4429c8ec5e99549f">cv.Stitcher</a>:</p>
+<blockquote>
+<div><a class="reference internal image-reference" href="_images/stitching.jpg"><img alt="_images/stitching.jpg" src="_images/stitching.jpg" style="width: 800px;" /></a>
+</div></blockquote>
+<blockquote>
+<div><div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">stitching</span><span class="p">():</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Склейка началась...&quot;</span><span class="p">)</span>
+    <span class="n">imgs</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="n">img_names</span> <span class="o">=</span> <span class="p">[]</span>
+
+    <span class="n">name</span> <span class="o">=</span> <span class="s1">&#39;frame&#39;</span>
+
+    <span class="c1"># i = 0     1    2    3    4   5</span>
+    <span class="n">x</span> <span class="o">=</span> <span class="p">[</span><span class="mf">0.0</span><span class="p">,</span> <span class="mf">0.4</span><span class="p">,</span> <span class="mf">0.4</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">,</span> <span class="mi">0</span><span class="p">]</span>
+    <span class="n">y</span> <span class="o">=</span> <span class="p">[</span><span class="mf">0.5</span><span class="p">,</span> <span class="mf">0.5</span><span class="p">,</span> <span class="mf">0.7</span><span class="p">,</span> <span class="mf">0.7</span><span class="p">,</span> <span class="mf">0.5</span><span class="p">,</span> <span class="mi">0</span><span class="p">]</span>
+
+    <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">x</span><span class="p">)</span><span class="o">-</span><span class="mi">2</span><span class="p">):</span>
+        <span class="n">file_name</span> <span class="o">=</span> <span class="n">name</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">i</span><span class="p">)</span> <span class="o">+</span> <span class="s2">&quot;_&quot;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">x</span><span class="p">[</span><span class="n">i</span><span class="p">])</span> <span class="o">+</span> <span class="s2">&quot;_&quot;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">y</span><span class="p">[</span><span class="n">i</span><span class="p">])</span> <span class="o">+</span> <span class="s2">&quot;.jpg&quot;</span>
+        <span class="nb">print</span><span class="p">(</span><span class="n">file_name</span><span class="p">)</span>
+        <span class="n">img_names</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">file_name</span><span class="p">)</span>
+
+    <span class="k">for</span> <span class="n">img_name</span> <span class="ow">in</span> <span class="n">img_names</span><span class="p">:</span>
+        <span class="nb">print</span><span class="p">(</span><span class="n">img_name</span><span class="p">)</span>
+        <span class="n">img</span> <span class="o">=</span> <span class="n">cv</span><span class="o">.</span><span class="n">imread</span><span class="p">(</span><span class="n">cv</span><span class="o">.</span><span class="n">samples</span><span class="o">.</span><span class="n">findFile</span><span class="p">(</span><span class="n">img_name</span><span class="p">))</span>
+        <span class="k">if</span> <span class="n">img</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Невозможно прочесть изображение &quot;</span> <span class="o">+</span> <span class="n">img_name</span><span class="p">)</span>
+            <span class="n">sys</span><span class="o">.</span><span class="n">exit</span><span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">)</span>
+        <span class="n">imgs</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">img</span><span class="p">)</span>
+
+    <span class="n">stitcher</span> <span class="o">=</span> <span class="n">cv</span><span class="o">.</span><span class="n">Stitcher</span><span class="o">.</span><span class="n">create</span><span class="p">(</span><span class="n">cv</span><span class="o">.</span><span class="n">Stitcher_PANORAMA</span><span class="p">)</span>
+    <span class="n">status</span><span class="p">,</span> <span class="n">full_map</span> <span class="o">=</span> <span class="n">stitcher</span><span class="o">.</span><span class="n">stitch</span><span class="p">(</span><span class="n">imgs</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="n">status</span> <span class="o">!=</span> <span class="n">cv</span><span class="o">.</span><span class="n">Stitcher_OK</span><span class="p">:</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Невозможно склеить изображения, код ошибки = </span><span class="si">%d</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="n">status</span><span class="p">)</span>
+        <span class="n">sys</span><span class="o">.</span><span class="n">exit</span><span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">)</span>
+
+    <span class="n">cv</span><span class="o">.</span><span class="n">imwrite</span><span class="p">(</span><span class="s1">&#39;map.jpg&#39;</span><span class="p">,</span> <span class="n">full_map</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Склейка прошла успешно. Карта сохранена в </span><span class="si">%s</span><span class="s2">!&quot;</span> <span class="o">%</span> <span class="s1">&#39;map.jpg&#39;</span><span class="p">)</span>
+
+    <span class="n">cv</span><span class="o">.</span><span class="n">imshow</span><span class="p">(</span><span class="s1">&#39;Enemy map&#39;</span><span class="p">,</span> <span class="n">full_map</span><span class="p">)</span>
+    <span class="n">cv</span><span class="o">.</span><span class="n">waitKey</span><span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">)</span>
+</pre></div>
+</div>
+</div></blockquote>
+</div>
+<div class="section" id="id11">
+<h2>Обработка карты по секторам с помощью классификатора<a class="headerlink" href="#id11" title="Permalink to this heading">¶</a></h2>
+<p>Склеенную карту разрезаем с помощью той же <a class="reference external" href="https://opencv.org/">OpenCV</a> на сектора и вызываем для каждого вырезанного фото классификатор.</p>
+<blockquote>
+<div><a class="reference internal image-reference" href="_images/crop.jpg"><img alt="_images/crop.jpg" src="_images/crop.jpg" style="width: 800px;" /></a>
+</div></blockquote>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">cropping_and_predict</span><span class="p">():</span>
+  <span class="n">tank_width</span> <span class="o">=</span> <span class="mi">60</span>
+  <span class="n">tank_height</span> <span class="o">=</span> <span class="mi">60</span>
+
+  <span class="n">cell_width</span> <span class="o">=</span> <span class="mi">3</span><span class="o">*</span><span class="n">tank_width</span>
+  <span class="n">cell_height</span> <span class="o">=</span> <span class="mi">3</span><span class="o">*</span><span class="n">tank_height</span>
+
+  <span class="n">image</span> <span class="o">=</span> <span class="n">cv</span><span class="o">.</span><span class="n">imread</span><span class="p">(</span><span class="n">cv</span><span class="o">.</span><span class="n">samples</span><span class="o">.</span><span class="n">findFile</span><span class="p">(</span><span class="s1">&#39;map.jpg&#39;</span><span class="p">))</span>
+  <span class="n">height</span><span class="p">,</span> <span class="n">width</span> <span class="o">=</span> <span class="n">image</span><span class="o">.</span><span class="n">shape</span><span class="p">[:</span><span class="mi">2</span><span class="p">]</span>
+
+  <span class="n">x</span> <span class="o">=</span> <span class="mi">0</span>
+  <span class="n">y</span> <span class="o">=</span> <span class="mi">0</span>
+
+  <span class="n">x_count</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">width</span> <span class="o">/</span> <span class="n">cell_width</span><span class="p">)</span>
+  <span class="n">cell_width</span> <span class="o">=</span> <span class="n">width</span> <span class="o">//</span> <span class="n">x_count</span>
+
+  <span class="n">y_count</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">height</span> <span class="o">/</span> <span class="n">cell_height</span><span class="p">)</span>
+  <span class="n">cell_height</span> <span class="o">=</span> <span class="n">height</span> <span class="o">//</span> <span class="n">y_count</span>
+
+  <span class="nb">print</span><span class="p">(</span><span class="n">cell_width</span><span class="p">,</span> <span class="s2">&quot;, &quot;</span><span class="p">,</span> <span class="n">cell_height</span><span class="p">)</span>
+
+  <span class="n">crop_imgs</span> <span class="o">=</span> <span class="p">[]</span>
+  <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="n">width</span><span class="o">//</span><span class="n">cell_width</span> <span class="o">+</span> <span class="mi">1</span><span class="p">):</span>
+      <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;X:&quot;</span><span class="p">,</span> <span class="n">x</span><span class="p">,</span> <span class="s2">&quot;:&quot;</span><span class="p">,</span> <span class="p">(</span><span class="n">x</span> <span class="o">+</span> <span class="n">cell_width</span><span class="p">))</span>
+      <span class="n">y</span> <span class="o">=</span> <span class="mi">0</span>
+      <span class="k">for</span> <span class="n">j</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="n">height</span><span class="o">//</span><span class="n">cell_height</span> <span class="o">+</span> <span class="mi">1</span><span class="p">):</span>
+          <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Y: &quot;</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span><span class="s2">&quot;:&quot;</span><span class="p">,(</span><span class="n">y</span> <span class="o">+</span> <span class="n">cell_height</span><span class="p">))</span>
+          <span class="n">crop_img</span> <span class="o">=</span> <span class="n">image</span><span class="p">[</span><span class="n">y</span><span class="p">:</span><span class="n">y</span><span class="o">+</span><span class="n">cell_height</span><span class="p">,</span> <span class="n">x</span><span class="p">:</span><span class="n">x</span><span class="o">+</span><span class="n">cell_width</span><span class="p">]</span>
+
+          <span class="n">cv</span><span class="o">.</span><span class="n">imwrite</span><span class="p">(</span><span class="s2">&quot;part&quot;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">i</span><span class="p">)</span> <span class="o">+</span> <span class="s2">&quot;_&quot;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">j</span><span class="p">)</span> <span class="o">+</span> <span class="s2">&quot;.jpg&quot;</span><span class="p">,</span> <span class="n">crop_img</span><span class="p">)</span>
+          <span class="n">crop_imgs</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">crop_img</span><span class="p">)</span>
+          <span class="n">y</span> <span class="o">=</span> <span class="n">y</span> <span class="o">+</span> <span class="n">cell_height</span>
+      <span class="n">x</span> <span class="o">=</span> <span class="n">x</span> <span class="o">+</span> <span class="n">cell_width</span>
+
+  <span class="n">model</span> <span class="o">=</span> <span class="n">ImageModel</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="s1">&#39;./zbee_onnx&#39;</span><span class="p">)</span>
+
+  <span class="n">i</span> <span class="o">=</span> <span class="mi">0</span>
+  <span class="n">tank_count</span> <span class="o">=</span> <span class="mi">0</span>
+  <span class="n">rszo_count</span> <span class="o">=</span> <span class="mi">0</span>
+  <span class="k">for</span> <span class="n">crop_img</span> <span class="ow">in</span> <span class="n">crop_imgs</span><span class="p">:</span>
+      <span class="n">frame_rgb</span> <span class="o">=</span> <span class="n">cv</span><span class="o">.</span><span class="n">cvtColor</span><span class="p">(</span><span class="n">crop_img</span><span class="p">,</span> <span class="n">cv</span><span class="o">.</span><span class="n">COLOR_BGR2RGB</span><span class="p">)</span>
+      <span class="n">model_frame</span> <span class="o">=</span> <span class="n">Image</span><span class="o">.</span><span class="n">fromarray</span><span class="p">(</span><span class="n">frame_rgb</span><span class="p">)</span>
+
+      <span class="n">predictions</span> <span class="o">=</span> <span class="n">model</span><span class="o">.</span><span class="n">predict</span><span class="p">(</span><span class="n">model_frame</span><span class="p">)</span>
+
+      <span class="k">if</span> <span class="n">predictions</span><span class="o">.</span><span class="n">prediction</span> <span class="o">==</span> <span class="s1">&#39;Class_tank&#39;</span><span class="p">:</span>
+          <span class="n">tank_count</span> <span class="o">=</span> <span class="n">tank_count</span> <span class="o">+</span> <span class="mi">1</span>
+      <span class="k">if</span> <span class="n">predictions</span><span class="o">.</span><span class="n">prediction</span> <span class="o">==</span> <span class="s1">&#39;Class_rszo&#39;</span><span class="p">:</span>
+          <span class="n">rszo_count</span> <span class="o">=</span> <span class="n">rszo_count</span> <span class="o">+</span> <span class="mi">1</span>
+
+      <span class="n">cv</span><span class="o">.</span><span class="n">putText</span><span class="p">(</span><span class="n">crop_img</span><span class="p">,</span> <span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">predictions</span><span class="o">.</span><span class="n">prediction</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">,</span> <span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">40</span><span class="p">),</span> <span class="n">cv</span><span class="o">.</span><span class="n">FONT_HERSHEY_SIMPLEX</span><span class="p">,</span>
+                  <span class="n">fontScale</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">255</span><span class="p">))</span>
+      <span class="n">cv</span><span class="o">.</span><span class="n">imshow</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">predictions</span><span class="o">.</span><span class="n">prediction</span><span class="si">}</span><span class="s1">.jpg&#39;</span><span class="p">,</span> <span class="n">crop_img</span><span class="p">)</span>
+
+      <span class="n">cv</span><span class="o">.</span><span class="n">imwrite</span><span class="p">(</span><span class="s2">&quot;Frame&quot;</span><span class="o">+</span><span class="nb">str</span><span class="p">(</span><span class="n">i</span><span class="p">)</span><span class="o">+</span><span class="s2">&quot;.jpg&quot;</span><span class="p">,</span> <span class="n">crop_img</span><span class="p">)</span>
+      <span class="n">i</span><span class="o">=</span><span class="n">i</span><span class="o">+</span><span class="mi">1</span>
+
+      <span class="n">cv</span><span class="o">.</span><span class="n">waitKey</span><span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">)</span>
+
+  <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Результат работы&quot;</span><span class="p">)</span>
+  <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Количество танков: &quot;</span><span class="p">,</span> <span class="n">tank_count</span><span class="p">)</span>
+  <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Количество ракетных установок: &quot;</span><span class="p">,</span> <span class="n">rszo_count</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="todo">
+<h2>TODO: планируются улучшения проекта<a class="headerlink" href="#todo" title="Permalink to this heading">¶</a></h2>
+<ol class="arabic simple">
+<li><p>Заменить разрезание карты на сектора на детектор объектов <a class="reference external" href="https://arxiv.org/pdf/1804.02767.pdf">YOLOv3</a> (уже частично реализовано).</p></li>
+<li><p>Увеличить точность подсчета объектов на карте.</p></li>
+<li><p>Усовершенствовать передвижение квадрокоптера по координатам, сейчас столкнулись с непониманием работы функции point_reached(blocking=False). При её использовании некоторые координатные точки пропускались, поэтому она была заменена на неэффективный time.sleep().</p></li>
+</ol>
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<h1 class="logo"><a href="#">pioner_mini_map_classification</a></h1>
+
+
+
+
+
+
+
+
+<h3>Навигация</h3>
+
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="#">Documentation overview</a><ul>
+  </ul></li>
+</ul>
+</div>
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Быстрый поиск</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"/>
+      <input type="submit" value="Искать" />
+    </form>
+    </div>
+</div>
+<script>document.getElementById('searchbox').style.display = "block"</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2022, Yaroslava.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 5.1.1</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.8</a>
+      
+      |
+      <a href="_sources/index.rst.txt"
+          rel="nofollow">Page source</a>
+    </div>
+
+    
+
+    
+  </body>
+</html>
