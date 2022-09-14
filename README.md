@@ -12,29 +12,17 @@
 Описание проекта
 ----------------
 
-* с помощью программы Lobe https://www.lobe.ai/] был обучен классификатор на три вида объектов: пусто, танк, РСЗО
-* полет квадрокоптера запрограммирован для облета прямоугольной территории по координатам
-* в параллельном потоке делает фотографии
-* после приземления все фото склеиваются в одну карту с помощью библиотеки OpenCV 
-* получившаяся карта делится на прямоугольники такой величины, чтобы на каждом куске было примерно по одному объекту
-* каждый кусок карты обрабатывается классификатором и подсчитывается количество классифицированных объектов
+* с помощью программы [Lobe](https://www.lobe.ai/) был обучен классификатор на три вида объектов: пусто, танк, РСЗО;
+* полет квадрокоптера запрограммирован для облета прямоугольной территории по координатам;
+* в параллельном потоке делает фотографии территории;
+* после приземления все фото склеиваются в одну карту с помощью библиотеки [OpenCV](https://opencv.org/);
+* получившаяся карта делится на прямоугольники такой величины, чтобы на каждом куске было примерно по одному объекту;
+* каждый кусок карты обрабатывается классификатором и подсчитывается количество классифицированных объектов.
 
-Проект доступен на `GitHub`_
+![alt text](https://github.com/LavaLina/pioner_mini_competition/blob/main/docs/build/html/_images/correct_training.jpg?raw=true)
 
-.. _GitHub: https://github.com/LavaLina/pioner_mini_competition
+![alt text](https://github.com/LavaLina/pioner_mini_competition/blob/main/docs/build/html/_images/flight_and_photo.jpg?raw=true)
 
-Test hyperlink: `Stack Overflow home <https://stackoverflow.com/>`_.
+![alt text](https://github.com/LavaLina/pioner_mini_competition/blob/main/docs/build/html/_images/stitching.jpg?raw=true)
 
-
-
-Test hyperlink: SO_.
-    
-.. _SO: https://stackoverflow.com/
-
-Or with:
-
-Test hyperlink: `Stack Overflow home <SO>`_.
-    
-.. _SO: https://stackoverflow.com/
-
-:ref:`contact page<contact_ref_label>`
+![alt text](https://github.com/LavaLina/pioner_mini_competition/blob/main/docs/build/html/_images/crop.jpg?raw=true)
