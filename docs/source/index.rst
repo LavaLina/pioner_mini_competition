@@ -6,14 +6,9 @@
 Создание карты полета квадрокоптера и обработка её классификатором
 ==================================================================
 
-.. toctree::
-   :maxdepth: 2
-   :caption: Contents:
+Проект для квадрокоптера `Pioneer Mini`_
 
-
-Проект для квадрокоптера `Pioner Mini`_
-
-.. _Pioner Mini: https://www.geoscan.aero/ru/pioneer-mini
+.. _Pioneer Mini: https://www.geoscan.aero/ru/pioneer-mini
 
 Авторы проекта
 ----------------

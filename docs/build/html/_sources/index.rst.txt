@@ -1,19 +1,9 @@
-.. pioner_mini_map_classification documentation master file, created by
-   sphinx-quickstart on Wed Sep 14 09:40:54 2022.
-   You can adapt this file completely to your liking, but it should at least
-   contain the root `toctree` directive.
-
 Создание карты полета квадрокоптера и обработка её классификатором
 ==================================================================
 
-.. toctree::
-   :maxdepth: 2
-   :caption: Contents:
+Проект для квадрокоптера `Pioneer Mini`_
 
-
-Проект для квадрокоптера `Pioner Mini`_
-
-.. _Pioner Mini: https://www.geoscan.aero/ru/pioneer-mini
+.. _Pioneer Mini: https://www.geoscan.aero/ru/pioneer-mini
 
 Авторы проекта
 ----------------
