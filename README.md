@@ -1,5 +1,5 @@
 # pioner_mini_competition
-Проект для квадрокоптера Pioner Mini: https://www.geoscan.aero/ru/pioneer-mini
+Проект для квадрокоптера [Pioneer Mini](https://www.geoscan.aero/ru/pioneer-mini)
 
 Создание карты полета квадрокоптера и обработка её классификатором
 ==========================
